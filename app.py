@@ -35,15 +35,23 @@ def save_image(image_data, extension):
     filename = f"{uuid.uuid4()}.{extension}"
     filepath = os.path.join(UPLOAD_FOLDER, filename)
     
-    # Відкриваємо та оптимізуємо зображення
+    # Відкриваємо зображення
     img = Image.open(image_data)
     
-    # Конвертуємо RGBA в RGB якщо потрібно
-    if img.mode == 'RGBA':
-        img = img.convert('RGB')
-    
-    # Зберігаємо зображення
-    img.save(filepath, optimize=True, quality=85)
+    # Зберігаємо зображення без модифікацій
+    if extension.lower() in ['png', 'webp']:
+        # Зберігаємо PNG та WebP з прозорістю
+        img.save(filepath, format=extension.upper(), quality=100)
+    else:
+        # Для інших форматів
+        if img.mode in ['RGBA', 'LA']:
+            # Якщо є прозорість, конвертуємо в RGB зі збереженням прозорості
+            background = Image.new('RGBA', img.size, (255, 255, 255, 0))
+            background.paste(img, mask=img.split()[-1])
+            background.save(filepath, format=extension.upper(), quality=100)
+        else:
+            # Зберігаємо без змін
+            img.save(filepath, format=extension.upper(), quality=100)
     
     return filename
 

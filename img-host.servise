@@ -1,0 +1,13 @@
+[Unit]
+Description=Image Hosting Server
+After=network.target
+
+[Service]
+User=www-data
+WorkingDirectory=/home/Scripts
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/usr/bin/python3 /home/Scripts/app.py --port 8080
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

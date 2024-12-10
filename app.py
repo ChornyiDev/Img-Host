@@ -1,5 +1,6 @@
 import os
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 from werkzeug.utils import secure_filename
 import requests
 from PIL import Image
@@ -10,6 +11,13 @@ import uuid
 load_dotenv()
 
 app = Flask(__name__)
+CORS(app, resources={
+    r"/api/*": {
+        "origins": "*",
+        "methods": ["POST", "OPTIONS"],
+        "allow_headers": ["Content-Type"]
+    }
+})
 
 # Конфігурація
 UPLOAD_FOLDER = '/var/www/img.magicboxpremium.com'
@@ -34,7 +42,7 @@ def save_image(image_data, extension):
     if img.mode == 'RGBA':
         img = img.convert('RGB')
     
-    # Зберігаємо зображ��ння
+    # Зберігаємо зображення
     img.save(filepath, optimize=True, quality=85)
     
     return filename
